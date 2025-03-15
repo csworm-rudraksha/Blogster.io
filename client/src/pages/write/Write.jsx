@@ -11,31 +11,43 @@ export default function Write() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Create new post object
     const newPost = {
       username: user.username,
       title,
       desc,
     };
+
     if (file) {
-      const data =new FormData();
+      const formData = new FormData();
       const filename = Date.now() + file.name;
-      data.append("name", filename);
-      data.append("file", file);
+      formData.append("name", filename);
+      formData.append("file", file);
       newPost.photo = filename;
+
       try {
-        await axios.post("/upload", data);
-      } catch (err) {}
+        const uploadRes = await axios.post("http://localhost:5003/api/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        });
+        console.log("Upload Response:", uploadRes.data);
+      } catch (err) {
+        console.error("File Upload Error:", err);
+      }
     }
+
     try {
-      const res = await axios.post("/posts", newPost);
+      const res = await axios.post("http://localhost:5003/api/posts", newPost);
       window.location.replace("/post/" + res.data._id);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Post Creation Error:", err);
+    }
   };
+
   return (
     <div className="write">
-      {file && (
-        <img className="writeImg" src={URL.createObjectURL(file)} alt="" />
-      )}
+      {file && <img className="writeImg" src={URL.createObjectURL(file)} alt="" />}
       <form className="writeForm" onSubmit={handleSubmit}>
         <div className="writeFormGroup">
           <label htmlFor="fileInput">
@@ -52,7 +64,7 @@ export default function Write() {
             placeholder="Title"
             className="writeInput"
             autoFocus={true}
-            onChange={e=>setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div className="writeFormGroup">
@@ -60,7 +72,7 @@ export default function Write() {
             placeholder="Tell your story..."
             type="text"
             className="writeInput writeText"
-            onChange={e=>setDesc(e.target.value)}
+            onChange={(e) => setDesc(e.target.value)}
           ></textarea>
         </div>
         <button className="writeSubmit" type="submit">

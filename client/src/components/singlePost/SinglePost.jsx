@@ -9,40 +9,55 @@ export default function SinglePost() {
   const location = useLocation();
   const path = location.pathname.split("/")[2];
   const [post, setPost] = useState({});
-  const PF = "http://localhost:5000/images/";
+  const PF = "http://localhost:5003/images/"; // Fixed URL to match backend
   const { user } = useContext(Context);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [updateMode, setUpdateMode] = useState(false);
 
+  // ✅ Fetch post data
   useEffect(() => {
     const getPost = async () => {
-      const res = await axios.get("/posts/" + path);
-      setPost(res.data);
-      setTitle(res.data.title);
-      setDesc(res.data.desc);
+      try {
+        const res = await axios.get(`http://localhost:5003/api/posts/${path}`);
+        setPost(res.data);
+        setTitle(res.data.title);
+        setDesc(res.data.desc);
+      } catch (err) {
+        console.error("Error fetching post:", err);
+      }
     };
     getPost();
   }, [path]);
 
+  // ✅ Delete post
   const handleDelete = async () => {
     try {
-      await axios.delete(`/posts/${post._id}`, {
+      await axios.delete(`http://localhost:5003/api/posts/${post._id}`, {
         data: { username: user.username },
+        withCredentials: true,
       });
       window.location.replace("/");
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error deleting post:", err);
+    }
   };
 
+  // ✅ Update post
   const handleUpdate = async () => {
     try {
-      await axios.put(`/posts/${post._id}`, {
+      await axios.put(`http://localhost:5003/api/posts/${post._id}`, {
         username: user.username,
         title,
         desc,
+      }, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
-      setUpdateMode(false)
-    } catch (err) {}
+      setUpdateMode(false);
+    } catch (err) {
+      console.error("Error updating post:", err);
+    }
   };
 
   return (

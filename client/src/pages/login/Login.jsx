@@ -12,16 +12,30 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: "LOGIN_START" });
+  
+    console.log("Username:", userRef.current.value);
+    console.log("Password:", passwordRef.current.value);
+  
     try {
-      const res = await axios.post("/auth/login", {
+      const res = await axios.post("http://localhost:5003/api/auth/login", {
         username: userRef.current.value,
-        password: passwordRef.current.value,
+        password: passwordRef.current.value, // Corrected this line
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
       });
+  
+      console.log("Response Data:", res.data);
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
     } catch (err) {
+      console.log("Login Error:", err.response?.data || err.message);
       dispatch({ type: "LOGIN_FAILURE" });
     }
   };
+  
+  
 
   return (
     <div className="login">

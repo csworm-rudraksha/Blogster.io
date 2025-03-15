@@ -12,35 +12,50 @@ export default function Settings() {
   const [success, setSuccess] = useState(false);
 
   const { user, dispatch } = useContext(Context);
-  const PF = "http://localhost:5000/images/"
+  const PF = "http://localhost:5003/images/"
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: "UPDATE_START" });
+  
     const updatedUser = {
       userId: user._id,
-      username,
-      email,
-      password,
+      username: username || user.username,
+      email: email || user.email,
+      password: password || "",
     };
+  
     if (file) {
       const data = new FormData();
       const filename = Date.now() + file.name;
       data.append("name", filename);
       data.append("file", file);
       updatedUser.profilePic = filename;
+  
       try {
-        await axios.post("/upload", data);
-      } catch (err) {}
+        const uploadRes = await axios.post("http://localhost:5003/api/upload", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        });
+        console.log("Upload Response:", uploadRes.data);
+      } catch (err) {
+        console.error("File Upload Error:", err);
+      }
     }
+  
     try {
-      const res = await axios.put("/users/" + user._id, updatedUser);
+      const res = await axios.put("http://localhost:5003/api/users/" + user._id, updatedUser, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
       setSuccess(true);
       dispatch({ type: "UPDATE_SUCCESS", payload: res.data });
     } catch (err) {
       dispatch({ type: "UPDATE_FAILURE" });
+      console.error("Update Error:", err);
     }
   };
+  
   return (
     <div className="settings">
       <div className="settingsWrapper">

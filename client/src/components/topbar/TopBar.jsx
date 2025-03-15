@@ -5,7 +5,7 @@ import "./topbar.css";
 
 export default function TopBar() {
   const { user, dispatch } = useContext(Context);
-  const PF = "http://localhost:5000/images/"
+  const PF = "http://localhost:5003/images/"
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
@@ -13,10 +13,11 @@ export default function TopBar() {
   return (
     <div className="top">
       <div className="topLeft">
-        <i className="topIcon fab fa-facebook-square"></i>
+        {/* <i className="topIcon fab fa-facebook-square"></i>
         <i className="topIcon fab fa-twitter-square"></i>
         <i className="topIcon fab fa-pinterest-square"></i>
-        <i className="topIcon fab fa-instagram-square"></i>
+        <i className="topIcon fab fa-instagram-square"></i> */}
+        BLOGSTER.io
       </div>
       <div className="topCenter">
         <ul className="topList">
@@ -64,7 +65,7 @@ export default function TopBar() {
             </li>
           </ul>
         )}
-        <i className="topSearchIcon fas fa-search"></i>
+        {/* <i className="topSearchIcon fas fa-search"></i> */}
       </div>
     </div>
   );

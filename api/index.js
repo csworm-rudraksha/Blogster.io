@@ -8,9 +8,18 @@ const postRoute = require("./routes/posts");
 const categoryRoute = require("./routes/categories");
 const multer = require("multer");
 const path = require("path");
-
+const cors = require("cors");
 dotenv.config();
 app.use(express.json());
+
+
+app.use(cors({
+    origin: "http://localhost:3000", // Allow requests from frontend
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
+
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
 mongoose
@@ -42,6 +51,6 @@ app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/categories", categoryRoute);
 
-app.listen("5000", () => {
+app.listen("5003", () => {
   console.log("Backend is running.");
 });
